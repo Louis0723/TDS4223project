@@ -4,6 +4,8 @@
 #include <fstream>
 #include <string>
 #include <cmath>
+#include <cstdio>
+#include <limits>
 using namespace std;
 
 void jumpSearchRoom();
@@ -11,6 +13,9 @@ void interpolationSearchPrice();
 void searchBookingID();
 void summaryReport();
 void bookingStatistic();
+void viewProfile();
+void updateProfile();
+void deleteAccount();
 
 void jumpSearchRoomType();
 void jumpSearchAvailableRoom();
@@ -21,10 +26,38 @@ void revenueStatistic();
 
 void adminMenu();
 bool adminLogin();
-
+string currentCustomerID = "";
 
 //ZIYI
-class Customer
+class Account
+{
+protected:
+    string id;
+    string password;
+
+public:
+    Account() {}
+
+    Account(string i, string p)
+    {
+        id = i;
+        password = p;
+    }
+
+    virtual ~Account() {}
+};
+
+class User : public Account
+{
+public:
+    User() {}
+
+    User(string i, string p) : Account(i, p) {}
+
+    virtual ~User() {}
+};
+
+class Customer : public User
 {
 public:
     string customerID;
@@ -33,8 +66,101 @@ public:
     string password;
 
     Customer() {}
-    ~Customer() {}
+
+    Customer(string id, string name, string phone, string password)
+    {
+        customerID = id;
+        this->name = name;
+        this->phone = phone;
+        this->password = password;
+    }
+
+    ~Customer()
+    {
+        cout << "Customer object destroyed\n";
+    }
+
+    void update(string newName);
+    void update(string newName, string newPhone);
+
+    friend void displayCustomer(Customer c);
+    friend void updateCustomerRecord(Customer &c);
 };
+
+void Customer::update(string newName)
+{
+    name = newName;
+    cout << "\nName updated only!";
+}
+
+void Customer::update(string newName, string newPhone)
+{
+    name = newName;
+    phone = newPhone;
+    cout << "\nName and Phone updated!";
+}
+
+class Admin : public User
+{
+public:
+    string adminName;
+
+    Admin() {}
+
+    Admin(string id, string password, string name)
+        : User(id, password)
+    {
+        adminName = name;
+    }
+
+    void showAdmin()
+    {
+        cout << "\nAdmin Name: " << adminName;
+    }
+};
+
+class Staff : public User
+{
+public:
+    string staffName;
+    string role;
+
+    Staff() {}
+
+    Staff(string id, string password, string name, string r)
+        : User(id, password)
+    {
+        staffName = name;
+        role = r;
+    }
+
+    void showStaff()
+    {
+        cout << "\nStaff Name: " << staffName;
+        cout << "\nRole: " << role;
+    }
+};
+
+void displayCustomer(Customer c)
+{
+    cout << "\nCustomer ID : "
+         << c.customerID;
+
+    cout << "\nName : "
+         << c.name;
+
+    cout << "\nPhone : "
+         << c.phone;
+}
+
+void updateCustomerRecord(Customer &c)
+{
+    cout << "\nEnter New Name : ";
+    getline(cin, c.name);
+
+    cout << "\nEnter New Phone : ";
+    getline(cin, c.phone);
+}
 
 struct Reservation
 {
@@ -44,6 +170,161 @@ struct Reservation
     int days;
     double totalPrice;
 };
+
+void viewProfile()
+{
+    system("cls");
+
+    string id;
+
+    cout << "\nEnter Customer ID : ";
+    cin >> id;
+
+    ifstream file("customer.txt");
+
+    string customerID,name,phone,password;
+
+    bool found = false;
+
+    while(getline(file,customerID,'|'))
+    {
+        getline(file,name,'|');
+        getline(file,phone,'|');
+        getline(file,password);
+
+        if(customerID == id)
+        {
+            found = true;
+
+            cout << "\nCustomer ID : "
+                 << customerID;
+
+            cout << "\nName : "
+                 << name;
+
+            cout << "\nPhone : "
+                 << phone;
+
+            break;
+        }
+    }
+
+    if(!found)
+    {
+        cout << "\nCustomer Not Found";
+    }
+
+    file.close();
+
+    system("pause");
+}
+
+void updateProfile()
+{
+    system("cls");
+
+    string id;
+
+    cout << "\nEnter Customer ID : ";
+    cin >> id;
+
+    ifstream file("customer.txt");
+    ofstream temp("temp.txt");
+
+    string customerID,name,phone,password;
+
+    bool found = false;
+
+    while(getline(file,customerID,'|'))
+    {
+        getline(file,name,'|');
+        getline(file,phone,'|');
+        getline(file,password);
+
+        if(customerID == id)
+        {
+            found = true;
+
+            cin.ignore();
+
+            cout << "\nNew Name : ";
+            getline(cin,name);
+
+            cout << "\nNew Phone : ";
+            getline(cin,phone);
+
+            cout << "\nNew Password : ";
+            getline(cin,password);
+        }
+
+        temp << customerID << "|"
+             << name << "|"
+             << phone << "|"
+             << password << endl;
+    }
+
+    file.close();
+    temp.close();
+
+    remove("customer.txt");
+    rename("temp.txt","customer.txt");
+
+    if(found)
+        cout << "\nProfile Updated!";
+    else
+        cout << "\nCustomer Not Found";
+
+    system("pause");
+}
+
+void deleteAccount()
+{
+    system("cls");
+
+    string id;
+
+    cout << "\nEnter Customer ID : ";
+    cin >> id;
+
+    ifstream file("customer.txt");
+    ofstream temp("temp.txt");
+
+    string customerID,name,phone,password;
+
+    bool found = false;
+
+    while(getline(file,customerID,'|'))
+    {
+        getline(file,name,'|');
+        getline(file,phone,'|');
+        getline(file,password);
+
+        if(customerID == id)
+        {
+            found = true;
+            continue;
+        }
+
+        temp << customerID << "|"
+             << name << "|"
+             << phone << "|"
+             << password << endl;
+    }
+
+    file.close();
+    temp.close();
+
+    remove("customer.txt");
+    rename("temp.txt","customer.txt");
+
+    if(found)
+        cout << "\nAccount Deleted!";
+    else
+        cout << "\nCustomer Not Found";
+
+    system("pause");
+}
+
 //ZIYI
 
 
@@ -94,38 +375,39 @@ void registerUser()
 	
 	system("cls");
 	
-    Customer c;
+    Customer *c = new Customer();
 
     cout << "\n\n\t\t\t\t===== CUSTOMER REGISTRATION =====\n";
 
     cout << "\n\n\t\t\t\tEnter Customer ID: ";
-    cin >> c.customerID;
+    cin >> c->customerID;
 
-    if (customerExists(c.customerID))
+    if (customerExists(c->customerID))
     {
         cout << "\n\n\t\t\t\tCustomer ID already exists!\n";
+
+        delete c;
+
         system("pause");
         return;
-        
     }
-     system("pause");
-    cin.ignore();
+     cin.ignore();
 
     cout << "\n\n\t\t\t\tEnter Name: ";
-    getline(cin, c.name);
+    getline(cin, c->name);
 
     cout << "\n\n\t\t\t\tEnter Phone Number: ";
-    getline(cin, c.phone);
+    getline(cin, c->phone);
 
     cout << "\n\n\t\t\t\tEnter Password: ";
-    getline(cin, c.password);
+    getline(cin, c->password);
 
     ofstream file("customer.txt", ios::app);
 
-    file << c.customerID << "|"
-         << c.name << "|"
-         << c.phone << "|"
-         << c.password << endl;
+    file << c->customerID << "|"
+         << c->name << "|"
+         << c->phone << "|"
+         << c->password << endl;
 
     file.close();
 
@@ -161,12 +443,11 @@ bool loginUser()
 
         if (customerID == id && pass == password)
         {
-            cout << "\n\n\t\t\t\tLogin Successful!\n";
+            currentCustomerID = customerID;
+
+            cout << "\nLogin Successful!\n";
             file.close();
-            system("pause");
             return true;
-            
-            
         }
     }
 
@@ -183,14 +464,18 @@ void displayRooms()
 {
    system("cls");
    
-   cout << "\n\n\t\t\t\t===== AVAILABLE ROOMS =====\n";
+cout << "\n\t========================================================";
+cout << "\n\tRoom No\tRoom Type\tPrice\t\tStatus";
+cout << "\n\t========================================================";
 
-    cout << "\n\n\t\t\t\tRoom No\tType\tPrice\n";
-    cout << "\n\n\t\t\t\t101\tSingle\tRM100\n";
-    cout << "\n\n\t\t\t\t102\tSingle\tRM100\n";
-    cout << "\n\n\t\t\t\t201\tDouble\tRM180\n";
-    cout << "\n\n\t\t\t\t202\tDouble\tRM180\n";
-    cout << "\n\n\t\t\t\t301\tSuite\tRM350\n";
+cout << "\n\t101\tSingle\t\tRM100\t\tAvailable";
+cout << "\n\t102\tSingle\t\tRM100\t\tAvailable";
+cout << "\n\t201\tDouble\t\tRM180\t\tAvailable";
+cout << "\n\t202\tDouble\t\tRM180\t\tAvailable";
+cout << "\n\t301\tSuite\t\tRM350\t\tAvailable";
+
+cout << "\n\t========================================================";
+cout << "\n\tTotal Rooms Available : 5";
     
     system("pause");
     
@@ -198,7 +483,7 @@ void displayRooms()
 
 void bookRoom()
 {
-    Reservation r;
+    Reservation *r = new Reservation;
 
     system("cls");
 
@@ -220,35 +505,34 @@ void bookRoom()
     count++;
 
     if(count < 10)
-        r.bookingID = "B00" + to_string(count);
+        r->bookingID = "B00" + to_string(count);
     else if(count < 100)
-        r.bookingID = "B0" + to_string(count);
+        r->bookingID = "B0" + to_string(count);
     else
-        r.bookingID = "B" + to_string(count);
+        r->bookingID = "B" + to_string(count);
 
     cout << "\n\n\t\t\t\tGenerated Booking ID : "
-         << r.bookingID;
+         << r->bookingID;
 
-    cout << "\n\n\t\t\t\tCustomer ID: ";
-    cin >> r.customerID;
+    r->customerID = currentCustomerID;
 
     cout << "\n\n\t\t\t\tRoom Number: ";
-    cin >> r.roomNumber;
+    cin >> r->roomNumber;
 
     cout << "\n\n\t\t\t\tNumber of Days: ";
-    cin >> r.days;
+    cin >> r->days;
 
     double roomPrice = 0;
 
-    if(r.roomNumber == 101 || r.roomNumber == 102)
+    if(r->roomNumber == 101 || r->roomNumber == 102)
     {
         roomPrice = 100;
     }
-    else if(r.roomNumber == 201 || r.roomNumber == 202)
+    else if(r->roomNumber == 201 || r->roomNumber == 202)
     {
         roomPrice = 180;
     }
-    else if(r.roomNumber == 301)
+    else if(r->roomNumber == 301)
     {
         roomPrice = 350;
     }
@@ -259,28 +543,54 @@ void bookRoom()
         return;
     }
 
-    r.totalPrice = roomPrice * r.days;
+    if(r->days <= 0)
+    {
+        cout << "\n\n\t\t\t\tInvalid Number of Days!";
+        system("pause");
+        return;
+    }
 
-    cout << "\n\n\t\t\t\tRoom Price Per Day : RM"
-         << roomPrice;
+    r->totalPrice = roomPrice * r->days;
 
-    cout << "\n\n\t\t\t\tTotal Price        : RM"
-         << r.totalPrice;
+cout << "\n\n\t\t\t\t================================";
+cout << "\n\t\t\t\t       BOOKING SUMMARY";
+cout << "\n\t\t\t\t================================";
+
+cout << "\n\n\t\t\t\tBooking ID      : "
+     << r->bookingID;
+
+cout << "\n\t\t\t\tCustomer ID     : "
+     << r->customerID;
+
+cout << "\n\t\t\t\tRoom Number     : "
+     << r->roomNumber;
+
+cout << "\n\t\t\t\tDays Stayed     : "
+     << r->days;
+
+cout << "\n\t\t\t\tPrice Per Day   : RM"
+     << roomPrice;
+
+cout << "\n\t\t\t\tTotal Payment   : RM"
+     << r->totalPrice;
+
+cout << "\n\t\t\t\t================================";
 
     ofstream file("reservation.txt", ios::app);
 
-    file << r.bookingID << "|"
-         << r.customerID << "|"
-         << r.roomNumber << "|"
-         << r.days << "|"
-         << r.totalPrice << endl;
+    file << r->bookingID << "|"
+         << r->customerID << "|"
+         << r->roomNumber << "|"
+         << r->days << "|"
+         << r->totalPrice << endl;
 
     file.close();
 
     cout << "\n\n\t\t\t\tRoom Reserved Successfully!";
     cout << "\n\n\t\t\t\tYour Booking ID is : "
-         << r.bookingID;"\n";
+     << r->bookingID << "\n";
 
+    delete r;
     system("pause");
 }
 
@@ -297,7 +607,7 @@ void viewReservation()
     string totalPrice;
 
     cout << "\n\n\t\t\t\t===== RESERVATION RECORD =====\n";
-
+    int no = 1;
     while (getline(file, bookingID, '|'))
     {
         getline(file, customerID, '|');
@@ -305,12 +615,17 @@ void viewReservation()
         getline(file, days, '|');
         getline(file, totalPrice);
 
-        cout << "\n\n\t\t\t\tBooking ID : " << bookingID;
-        cout << "\n\n\t\t\t\tCustomer ID: " << customerID;
-        cout << "\n\n\t\t\t\tRoom Number: " << roomNumber;
-        cout << "\n\n\t\t\t\tDays       : " << days;
-        cout << "\n\n\t\t\t\tTotal Price: RM" << totalPrice;
-        cout << "\n\n\t\t\t\t-----------------------------\n";
+        cout << "\n\n\t\t\t\t================================";
+        cout << "\n\t\t\t\tReservation #" << no++;
+        cout << "\n\t\t\t\t================================";
+
+        cout << "\n\t\t\t\tBooking ID   : " << bookingID;
+        cout << "\n\t\t\t\tCustomer ID  : " << customerID;
+        cout << "\n\t\t\t\tRoom Number  : " << roomNumber;
+        cout << "\n\t\t\t\tDays Stayed  : " << days;
+        cout << "\n\t\t\t\tTotal Price  : RM" << totalPrice;
+
+        cout << "\n\t\t\t\t================================";
     }
 
     file.close();
@@ -318,30 +633,42 @@ void viewReservation()
 }
 
 void checkIn()
-{    
+{
     system("cls");
+
     string bookingID;
 
-    cout << "\n\n\t\t\t\t===== CHECK IN =====\n";
-
-    cout << "\n\n\t\t\t\tEnter Booking ID: ";
+    cout << "\nEnter Booking ID : ";
     cin >> bookingID;
 
-    cout << "\n\n\t\t\t\tCheck-In Successful!\n";
+    ofstream file("checkin.txt",ios::app);
+
+    file << bookingID << endl;
+
+    file.close();
+
+    cout << "\nCheck-In Successful!";
+
     system("pause");
 }
 
 void checkOut()
 {
-	 system("cls");
+    system("cls");
+
     string bookingID;
 
-    cout << "\n\n\t\t\t\t===== CHECK OUT =====\n";
-
-    cout << "\n\n\t\t\t\tEnter Booking ID: ";
+    cout << "\nEnter Booking ID : ";
     cin >> bookingID;
 
-    cout << "\n\n\t\t\t\tCheck-Out Successful!\n";
+    ofstream file("checkout.txt",ios::app);
+
+    file << bookingID << endl;
+
+    file.close();
+
+    cout << "\nCheck-Out Successful!";
+
     system("pause");
 }
 //ZIYI
@@ -376,8 +703,6 @@ bool adminLogin()
     {
         getline(file, pass);
 
-        cout << "\n\n\t\t\t\tRead User = [" << user << "]";
-        cout << "\n\n\t\t\t\tRead Pass = [" << pass << "]";
 
         if(user == username && pass == password)
         {
@@ -403,26 +728,54 @@ void customerMenu()
 
     do
     {
-        system("cls");
+system("cls");
 
-        cout << "\n\n\t\t\t\t================================";
-        cout << "\n\t\t\t\t CUSTOMER MENU";
-        cout << "\n\t\t\t\t================================";
+cout << "\n\n";
+cout << "\t\t=====================================================\n";
+cout << "\t\t              HOTEL RESERVATION SYSTEM\n";
+cout << "\t\t                  CUSTOMER MENU\n";
+cout << "\t\t=====================================================\n";
 
-        cout << "\n\n\t\t\t\t1. Display Rooms";
-        cout << "\n\t\t\t\t2. Book Room";
-        cout << "\n\t\t\t\t3. View Reservation";
-        cout << "\n\t\t\t\t4. Check In";
-        cout << "\n\t\t\t\t5. Check Out";
-        cout << "\n\t\t\t\t6. Search Room Number";
-        cout << "\n\t\t\t\t7. Search Room Type";
-        cout << "\n\t\t\t\t8. Search Available Room";
-        cout << "\n\t\t\t\t9. Search Room Price";
-        cout << "\n\t\t\t\t10. Search Booking ID";
-        cout << "\n\t\t\t\t11. Logout";
+cout << "\n\t\tBOOKING SERVICES";
+cout << "\n\t\t-----------------------------------------------------";
+cout << "\n\t\t1.  Display Rooms";
+cout << "\n\t\t2.  Book Room";
+cout << "\n\t\t3.  View Reservation";
 
-        cout << "\n\n\t\t\t\tEnter Choice : ";
-        cin >> choice;
+cout << "\n\n\t\tCHECK-IN SERVICES";
+cout << "\n\t\t-----------------------------------------------------";
+cout << "\n\t\t4.  Check In";
+cout << "\n\t\t5.  Check Out";
+
+cout << "\n\n\t\tSEARCH SERVICES";
+cout << "\n\t\t-----------------------------------------------------";
+cout << "\n\t\t6.  Search Room Number";
+cout << "\n\t\t7.  Search Room Type";
+cout << "\n\t\t8.  Search Available Room";
+cout << "\n\t\t9.  Search Room Price";
+cout << "\n\t\t10. Search Booking ID";
+
+cout << "\n\n\t\tPROFILE MANAGEMENT";
+cout << "\n\t\t-----------------------------------------------------";
+cout << "\n\t\t11. Logout";
+cout << "\n\t\t12. View Profile";
+cout << "\n\t\t13. Update Profile";
+cout << "\n\t\t14. Delete Account";
+
+cout << "\n\n\t\t=====================================================";
+cout << "\n\t\tEnter Choice : ";
+
+cin >> choice;
+
+if(cin.fail())
+{
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    cout << "\nInvalid Input!";
+    system("pause");
+    continue;
+}
 
         switch(choice)
         {
@@ -468,6 +821,18 @@ void customerMenu()
 
         case 11:
                break;
+
+        case 12:
+            viewProfile();
+            break;
+
+        case 13:
+            updateProfile();
+            break;
+
+        case 14:
+            deleteAccount();
+            break;
 
             default:
                 cout << "\n\n\t\t\t\tInvalid Choice!";
@@ -705,7 +1070,17 @@ void summaryReport()
 
     cout << "\n\t\t\t\tTotal Revenue : RM"
          << totalIncome;
+     
+     double averageRevenue = 0;
 
+if(totalBooking > 0)
+{
+    averageRevenue = totalIncome / totalBooking;
+}
+
+cout << "\n\t\t\t\tAverage Revenue : RM"
+     << averageRevenue;
+     
     cout << "\n\n\t\t\t\t===================================";
 
     cout << "\n\n\t\t\t\t";
@@ -868,15 +1243,76 @@ void interpolationSearchPayment()
 
     system("pause");
 }
-
 void monthlyReport()
 {
     system("cls");
 
-   cout << "\n\n\t\t\t\t================================";
-        cout << "\n\t\t\t\t montly Statistic";
-        cout << "\n\t\t\t\t================================";
-    cout << "\n\n\t\t\t\tFeature Under Development";
+    ifstream file("reservation.txt");
+
+    string bookingID, customerID, roomNumber, days, totalPrice;
+
+    int totalBookings = 0;
+    int singleRoom = 0;
+    int doubleRoom = 0;
+    int suiteRoom = 0;
+
+    double totalRevenue = 0;
+
+    while(getline(file, bookingID, '|'))
+    {
+        getline(file, customerID, '|');
+        getline(file, roomNumber, '|');
+        getline(file, days, '|');
+        getline(file, totalPrice);
+
+        totalBookings++;
+        totalRevenue += stod(totalPrice);
+
+        int room = stoi(roomNumber);
+
+        if(room == 101 || room == 102)
+            singleRoom++;
+        else if(room == 201 || room == 202)
+            doubleRoom++;
+        else if(room == 301)
+            suiteRoom++;
+    }
+
+    file.close();
+
+    double averageRevenue = 0;
+
+    if(totalBookings > 0)
+    {
+        averageRevenue = totalRevenue / totalBookings;
+    }
+
+cout << "\n\n\t\t\t\t========================================";
+cout << "\n\t\t\t\t            MONTHLY REPORT";
+cout << "\n\t\t\t\t========================================";
+
+cout << "\n\n\t\t\t\tTotal Bookings      : "
+     << totalBookings;
+
+cout << "\n\t\t\t\tTotal Revenue       : RM"
+     << totalRevenue;
+
+cout << "\n\t\t\t\tAverage Revenue     : RM"
+     << averageRevenue;
+
+cout << "\n\n\t\t\t\tROOM DISTRIBUTION";
+cout << "\n\t\t\t\t----------------------------------------";
+
+cout << "\n\t\t\t\tSingle Room Booking : "
+     << singleRoom;
+
+cout << "\n\t\t\t\tDouble Room Booking : "
+     << doubleRoom;
+
+cout << "\n\t\t\t\tSuite Room Booking  : "
+     << suiteRoom;
+
+cout << "\n\n\t\t\t\t========================================";
 
     system("pause");
 }
@@ -885,12 +1321,17 @@ void roomStatistic()
 {
     system("cls");
 
-        cout << "\n\n\t\t\t\t================================";
-        cout << "\n\t\t\t\t Room Statistic";
-        cout << "\n\t\t\t\t================================";
-    cout << "\n\n\t\t\t\tSingle Room : 2";
-    cout << "\n\t\t\t\tDouble Room : 2";
-    cout << "\n\t\t\t\tSuite Room : 1";
+cout << "\n\n\t\t\t\t================================";
+cout << "\n\t\t\t\t      ROOM STATISTICS";
+cout << "\n\t\t\t\t================================";
+
+cout << "\n\n\t\t\t\tSingle Rooms : 2";
+cout << "\n\t\t\t\tDouble Rooms : 2";
+cout << "\n\t\t\t\tSuite Rooms  : 1";
+
+cout << "\n\n\t\t\t\tTotal Rooms  : 5";
+
+cout << "\n\t\t\t\t================================";
 
     system("pause");
 }
@@ -940,76 +1381,95 @@ void adminMenu()
 
     do
     {
-        system("cls");
+system("cls");
 
-        cout << "\n\n\t\t\t\t================================";
-        cout << "\n\t\t\t\t ADMIN MENU";
-        cout << "\n\t\t\t\t================================";
+cout << "\n";
+cout << "\t\t=====================================================\n";
+cout << "\t\t          HOTEL RESERVATION SYSTEM\n";
+cout << "\t\t                 ADMIN PANEL\n";
+cout << "\t\t=====================================================\n";
 
-        cout << "\n\t\t\t\t1. View Reservations";
-        cout << "\n\t\t\t\t2. Search Booking ID";
-        cout << "\n\t\t\t\t3. Search Room Number";
-        cout << "\n\t\t\t\t4. Search Room Type";
-        cout << "\n\t\t\t\t5. Search Room Price";
-        cout << "\n\t\t\t\t6. Search Total Payment";
-        cout << "\n\t\t\t\t7. Summary Report";
-        cout << "\n\t\t\t\t8. Monthly Report";
-        cout << "\n\t\t\t\t9. Booking Statistics";
-        cout << "\n\t\t\t\t10. Room Statistics";
-        cout << "\n\t\t\t\t11. Revenue Statistics";
-        cout << "\n\t\t\t\t12. Logout";
+cout << "\n\t\t [1]  View Reservations";
+cout << "\n\t\t [2]  Search Booking ID";
+cout << "\n\t\t [3]  Search Room Number";
+cout << "\n\t\t [4]  Search Room Type";
+cout << "\n\t\t [5]  Search Room Price";
+cout << "\n\t\t [6]  Search Total Payment";
 
-        cout << "\n\n\t\t\t\tEnter Choice : ";
+cout << "\n\n\t\t ---------------- REPORTS ----------------";
+
+cout << "\n\t\t [7]  Summary Report";
+cout << "\n\t\t [8]  Monthly Report";
+cout << "\n\t\t [9]  Booking Statistics";
+cout << "\n\t\t [10] Room Statistics";
+cout << "\n\t\t [11] Revenue Statistics";
+
+cout << "\n\n\t\t -----------------------------------------";
+
+cout << "\n\t\t [12] Logout";
+
+cout << "\n\n\t\t=====================================================";
+cout << "\n\t\t Enter Choice : ";
         cin >> choice;
+
+        if(cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            cout << "\nInvalid Input!";
+            system("pause");
+            continue;
+        }
 
         switch(choice)
         {
-        case 1:
-             viewReservation();
-             break;
+            case 1:
+                viewReservation();
+                break;
 
-       case 2:
-             searchBookingID();
-            break;
+            case 2:
+                searchBookingID();
+                break;
 
-       case 3:
-             jumpSearchRoom();
-            break;
+            case 3:
+                jumpSearchRoom();
+                break;
 
-        case 4:
-            jumpSearchRoomType();
-            break;
+            case 4:
+                jumpSearchRoomType();
+                break;
 
-        case 5:
-            interpolationSearchPrice();
-             break;
+            case 5:
+                interpolationSearchPrice();
+                break;
 
-        case 6:
-             interpolationSearchPayment();
-             break;
+            case 6:
+                interpolationSearchPayment();
+                break;
 
-        case 7:
-            summaryReport();
-            break;
+            case 7:
+                summaryReport();
+                break;
 
-       case 8:
-             monthlyReport();
-         break;
+            case 8:
+                monthlyReport();
+                break;
 
-        case 9:
-            bookingStatistic();
-            break;
+            case 9:
+                bookingStatistic();
+                break;
 
-        case 10:
-            roomStatistic();
-            break;
+            case 10:
+                roomStatistic();
+                break;
 
-        case 11:
-            revenueStatistic();
-             break;
+            case 11:
+                revenueStatistic();
+                break;
 
-         case 12:
-             break;
+            case 12:
+                break;
 
             default:
                 cout << "\nInvalid Choice!";
@@ -1030,18 +1490,23 @@ int main()
 
     do
     {
-        system("cls");
+      system("cls");
 
-        cout << "\n\n\t\t\t\t================================";
-        cout << "\n\t\t\t\t HOTEL RESERVATION SYSTEM";
-        cout << "\n\t\t\t\t================================";
+       cout << "\n\n";
+cout << "\t\t==================================================\n";
+cout << "\t\t          HOTEL RESERVATION SYSTEM\n";
+cout << "\t\t==================================================\n";
 
-        cout << "\n\n\t\t\t\t1. Customer Register";
-        cout << "\n\t\t\t\t2. Customer Login";
-        cout << "\n\t\t\t\t3. Admin Login";
-        cout << "\n\t\t\t\t4. Exit";
+cout << "\n\t\tWelcome To Hotel Reservation System";
+cout << "\n\t\tManage Reservations Efficiently";
 
-        cout << "\n\n\t\t\t\tEnter Choice : ";
+       cout << "\n\t\t1. Customer Register";
+       cout << "\n\t\t2. Customer Login";
+       cout << "\n\t\t3. Admin Login";
+       cout << "\n\t\t4. Exit";
+
+       cout << "\n\n\t\t-----------------------------------------";
+       cout << "\n\t\tEnter Choice : ";
         cin >> choice;
 
         switch(choice)
