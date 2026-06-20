@@ -367,7 +367,7 @@ void addRoomRecord()
 
     RoomRecord r;
 
-    cout << "\n\n\t\t\t\t===== ADD NEW ROOM =====\n";
+    cout << "\n\n\t\t\t\t============ ADD NEW ROOM ============\n";
 
     cout << "\n\n\t\t\t\tEnter Room Number: ";
     cin >> r.roomNumber;
@@ -388,7 +388,7 @@ void addRoomRecord()
 
     file.close();
 
-    cout << "\nRoom Added Successfully!\n";
+    cout << "\n\n\t\t\t\tRoom Added Successfully!\n";
     system("pause");
 }
 
@@ -402,7 +402,7 @@ void displayRoomRecords()
 
     string roomNumber, roomType, price;
 
-    cout << "\n\n\t\t\t\t===== ROOM LIST (DATABASE) =====\n";
+    cout << "\n\n\t\t\t\t============= ROOM LIST (DATABASE) =============\n";
 
     while(getline(file, roomNumber, '|'))
     {
@@ -412,7 +412,7 @@ void displayRoomRecords()
         cout << "\n\n\t\t\t\tRoom No   : " << roomNumber;
         cout << "\n\n\t\t\t\tType      : " << roomType;
         cout << "\n\n\t\t\t\tPrice     : RM" << price;
-        cout << "\n-----------------------------\n";
+        cout << "\n\n\t\t\t\t--------------------------------\n";
     }
 
     file.close();
@@ -425,7 +425,7 @@ void displayRoomRecords()
 void updateRoomRecord()
 {
     system("cls");
-
+	cout << "\n\n\t\t\t\t============= Update Room =============\n";
     string id;
     cout << "\n\n\t\t\t\tEnter Room Number to Update: ";
     cin >> id;
@@ -447,7 +447,7 @@ void updateRoomRecord()
             found = true;
 
             cin.ignore();
-
+			
             cout << "\n\n\t\t\t\tEnter New Room Type: ";
             getline(cin, roomType);
 
@@ -467,9 +467,9 @@ void updateRoomRecord()
     rename("temp.txt", "room.txt");
 
     if(found)
-        cout << "\nRoom Updated Successfully!\n";
+        cout << "\n\n\t\t\t\tRoom Updated Successfully!\n";
     else
-        cout << "\nRoom Not Found!\n";
+        cout << "\n\n\t\t\t\tRoom Not Found!\n";
 
     system("pause");
 }
@@ -479,7 +479,7 @@ void updateRoomRecord()
 void deleteRoomRecord()
 {
     system("cls");
-
+	cout << "\n\n\t\t\t\t============= Delete Room =============\n";
     string id;
     cout << "\n\n\t\t\t\tEnter Room Number to Delete: ";
     cin >> id;
@@ -526,7 +526,7 @@ void deleteRoomRecord()
 void searchRoomRecord()
 {
     system("cls");
-
+	cout << "\n\n\t\t\t\t============= Search Room =============\n";
     string id;
     cout << "\n\n\t\t\t\tEnter Room Number to Search: ";
     cin >> id;
@@ -600,14 +600,14 @@ void sortRoomRecords()
         }
     }
 
-    cout << "\n\n\t\t\t\t===== SORTED ROOM RECORDS =====\n";
+    cout << "\n\n\t\t\t\t============= SORTED ROOM RECORDS =============\n";
 
     for(int i = 0; i < count; i++)
     {
         cout << "\n\n\t\t\t\tRoom Number : " << room[i].roomNumber;
         cout << "\n\n\t\t\t\tRoom Type   : " << room[i].roomType;
         cout << "\n\n\t\t\t\tPrice       : RM" << room[i].price;
-        cout << "\n-------------------------------";
+        cout << "\n\n\t\t\t\t--------------------------------\n";
     }
 
     system("pause");
