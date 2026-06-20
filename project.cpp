@@ -369,15 +369,15 @@ void addRoomRecord()
 
     cout << "\n\n\t\t\t\t===== ADD NEW ROOM =====\n";
 
-    cout << "\n\n\t\t\t\tEnter Room Number: ";
+    cout << "Enter Room Number: ";
     cin >> r.roomNumber;
 
     cin.ignore();
 
-    cout << "\n\n\t\t\t\tEnter Room Type: ";
+    cout << "Enter Room Type: ";
     getline(cin, r.roomType);
 
-    cout << "\n\n\t\t\t\tEnter Price: RM";
+    cout << "Enter Price: RM";
     cin >> r.price;
 
     ofstream file("room.txt", ios::app);
@@ -409,10 +409,10 @@ void displayRoomRecords()
         getline(file, roomType, '|');
         getline(file, price);
 
-        cout << "\n\n\t\t\t\tRoom No   : " << roomNumber;
-        cout << "\n\n\t\t\t\tType      : " << roomType;
-        cout << "\n\n\t\t\t\tPrice     : RM" << price;
-        cout << "\n-----------------------------\n";
+        cout << "\nRoom No   : " << roomNumber;
+        cout << "\nType      : " << roomType;
+        cout << "\nPrice     : RM" << price;
+        cout << "\n---------------------------\n";
     }
 
     file.close();
@@ -427,7 +427,7 @@ void updateRoomRecord()
     system("cls");
 
     string id;
-    cout << "\n\n\t\t\t\tEnter Room Number to Update: ";
+    cout << "\nEnter Room Number to Update: ";
     cin >> id;
 
     ifstream file("room.txt");
@@ -448,10 +448,10 @@ void updateRoomRecord()
 
             cin.ignore();
 
-            cout << "\n\n\t\t\t\tEnter New Room Type: ";
+            cout << "\nEnter New Room Type: ";
             getline(cin, roomType);
 
-            cout << "\n\n\t\t\t\tEnter New Price: RM";
+            cout << "Enter New Price: RM";
             cin >> price;
         }
 
@@ -481,7 +481,7 @@ void deleteRoomRecord()
     system("cls");
 
     string id;
-    cout << "\n\n\t\t\t\tEnter Room Number to Delete: ";
+    cout << "\nEnter Room Number to Delete: ";
     cin >> id;
 
     ifstream file("room.txt");
@@ -514,9 +514,9 @@ void deleteRoomRecord()
     rename("temp.txt", "room.txt");
 
     if(found)
-        cout << "\n\n\t\t\t\tRoom Deleted Successfully!\n";
+        cout << "\nRoom Deleted Successfully!\n";
     else
-        cout << "\n\n\t\t\t\tRoom Not Found!\n";
+        cout << "\nRoom Not Found!\n";
 
     system("pause");
 }
@@ -528,7 +528,7 @@ void searchRoomRecord()
     system("cls");
 
     string id;
-    cout << "\n\n\t\t\t\tEnter Room Number to Search: ";
+    cout << "\nEnter Room Number to Search: ";
     cin >> id;
 
     ifstream file("room.txt");
@@ -545,10 +545,10 @@ void searchRoomRecord()
         {
             found = true;
 
-            cout << "\n\n\t\t\t\tRoom Found!";
-            cout << "\n\n\t\t\t\tRoom No : " << roomNumber;
-            cout << "\n\n\t\t\t\tType    : " << roomType;
-            cout << "\n\n\t\t\t\tPrice   : RM" << price;
+            cout << "\nRoom Found!";
+            cout << "\nRoom No : " << roomNumber;
+            cout << "\nType    : " << roomType;
+            cout << "\nPrice   : RM" << price;
             break;
         }
     }
@@ -556,7 +556,7 @@ void searchRoomRecord()
     file.close();
 
     if(!found)
-        cout << "\n\n\t\t\t\tRoom Not Found!\n";
+        cout << "\nRoom Not Found!\n";
 
     system("pause");
 }
@@ -604,10 +604,10 @@ void sortRoomRecords()
 
     for(int i = 0; i < count; i++)
     {
-        cout << "\n\n\t\t\t\tRoom Number : " << room[i].roomNumber;
-        cout << "\n\n\t\t\t\tRoom Type   : " << room[i].roomType;
-        cout << "\n\n\t\t\t\tPrice       : RM" << room[i].price;
-        cout << "\n-------------------------------";
+        cout << "\nRoom Number : " << room[i].roomNumber;
+        cout << "\nRoom Type   : " << room[i].roomType;
+        cout << "\nPrice       : RM" << room[i].price;
+        cout << "\n-----------------------------";
     }
 
     system("pause");
