@@ -18,6 +18,7 @@ void viewProfile();
 void updateProfile();
 void deleteAccount();
 void viewAllReservations();
+void cancelReservation();
 
 void jumpSearchRoomType();
 void jumpSearchAvailableRoom();
@@ -1144,6 +1145,74 @@ void viewReservation()
     system("pause");
 }
 
+void cancelReservation()
+{
+    system("cls");
+
+    string bookingID;
+
+    cout << "\n\n\t\t\t\t===== CANCEL RESERVATION =====";
+    cout << "\n\n\t\t\t\tEnter Booking ID : ";
+    cin >> bookingID;
+
+    ifstream file("reservation.txt");
+    ofstream temp("temp.txt");
+
+    string bID, cID, roomNo, days, totalPrice;
+
+    bool found = false;
+
+    while(getline(file, bID, '|'))
+    {
+        getline(file, cID, '|');
+        getline(file, roomNo, '|');
+        getline(file, days, '|');
+        getline(file, totalPrice);
+
+        if(bID == bookingID &&
+        cID == currentCustomerID)
+        {
+            char confirm;
+
+            cout << "\n\n\t\t\t\tBooking Found";
+            cout << "\n\t\t\t\tRoom Number : " << roomNo;
+            cout << "\n\t\t\t\tTotal Price : RM" << totalPrice;
+
+            cout << "\n\n\t\t\t\tConfirm Cancel (Y/N) : ";
+            cin >> confirm;
+
+            if(confirm == 'Y' || confirm == 'y')
+            {
+                found = true;
+                continue;
+            }
+        }
+
+        temp << bID << "|"
+             << cID << "|"
+             << roomNo << "|"
+             << days << "|"
+             << totalPrice << endl;
+    }
+
+    file.close();
+    temp.close();
+
+    remove("reservation.txt");
+    rename("temp.txt", "reservation.txt");
+
+    if(found)
+    {
+        cout << "\n\n\t\t\t\tReservation Cancelled Successfully!";
+    }
+    else
+    {
+        cout << "\n\n\t\t\t\tBooking Not Found!";
+    }
+
+    system("pause");
+}
+
 void checkIn()
 {
     system("cls");
@@ -1315,6 +1384,7 @@ cout << "\n\t\t14. View Profile";
 cout << "\n\t\t15. Update Profile";
 cout << "\n\t\t16. Delete Account";
 cout << "\n\t\t17. Display Reservation Linked List";
+cout << "\n\t\t18. Cancel Reservation";
 
 cout << "\n\n\t\t=====================================================";
 cout << "\n\t\tEnter Choice : ";
@@ -1400,12 +1470,16 @@ if(cin.fail())
             displayReservationList();
             break;
 
+        case 18:
+            cancelReservation();
+            break;
+
         default:
             cout << "\n\n\t\t\t\tInvalid Choice!";
             system("pause");
         }
 
-    } while(choice != 11);
+    } while(choice != 13);
 }
 //ZIYI
 
