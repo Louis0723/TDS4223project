@@ -27,6 +27,11 @@ void roomStatistic();
 void revenueStatistic();
 void sortRoomRecords();
 
+void makePayment();
+void viewPaymentHistory();
+void searchPaymentRecord();
+void deletePaymentRecord();
+
 void adminMenu();
 bool adminLogin();
 string currentCustomerID = "";
@@ -508,6 +513,14 @@ struct RoomNode
     RoomRecord data;
     RoomNode* next;
 };
+
+struct Payment
+{
+    string paymentID;
+    string bookingID;
+    double amount;
+    string method;
+};
 // ADD ROOM
 void addRoomRecord()
 {
@@ -980,29 +993,29 @@ void bookRoom()
     cin >> r->days;
 
     // Check duplicate booking
-    ifstream check("reservation.txt");
+ifstream check("reservation.txt");
 
-    string bID, cID, roomNo, days, total;
+string bID, cID, checkRoomNo, checkDays, total;
 
-    while(getline(check, bID, '|'))
+while(getline(check, bID, '|'))
+{
+    getline(check, cID, '|');
+    getline(check, checkRoomNo, '|');
+    getline(check, checkDays, '|');
+    getline(check, total);
+
+    if(stoi(checkRoomNo) == r->roomNumber)
     {
-        getline(check, cID, '|');
-        getline(check, roomNo, '|');
-        getline(check, days, '|');
-        getline(check, total);
+        cout << "\n\n\t\t\t\tRoom Already Booked!";
+        check.close();
 
-        if(stoi(roomNo) == r->roomNumber)
-        {
-            cout << "\n\n\t\t\t\tRoom Already Booked!";
-            check.close();
-
-            delete r;
-            system("pause");
-            return;
-        }
+        delete r;
+        system("pause");
+        return;
     }
+}
 
-    check.close();
+check.close();
 
     double roomPrice = 0;
 
@@ -1170,6 +1183,42 @@ void checkOut()
 
     system("pause");
 }
+
+void makePayment()
+{
+    system("cls");
+
+    Payment p;
+
+    cout << "\n\n\t\t\t\t===== PAYMENT =====";
+
+    cout << "\n\n\t\t\t\tEnter Payment ID : ";
+    cin >> p.paymentID;
+
+    cout << "\n\n\t\t\t\tEnter Booking ID : ";
+    cin >> p.bookingID;
+
+    cout << "\n\n\t\t\t\tEnter Amount : RM";
+    cin >> p.amount;
+
+cin.ignore(numeric_limits<streamsize>::max(), '\n'); // FIX HERE
+
+    cout << "\n\n\t\t\t\tPayment Method : ";
+    getline(cin, p.method);
+
+    ofstream file("payment.txt", ios::app);
+
+    file << p.paymentID << "|"
+         << p.bookingID << "|"
+         << p.amount << "|"
+         << p.method << endl;
+
+    file.close();
+
+    cout << "\n\n\t\t\t\tPayment Successful!";
+
+    system("pause");
+}
 //ZIYI
 
 //ADMIN LOGIN LOUIS
@@ -1241,26 +1290,31 @@ cout << "\n\t\t1.  Display Rooms";
 cout << "\n\t\t2.  Book Room";
 cout << "\n\t\t3.  View Reservation";
 
+cout << "\n\n\t\tPayment Services";
+cout << "\n\t\t-----------------------------------------------------";
+cout << "\n\t\t4.  Make Payment";
+cout << "\n\t\t5.  View Payment History";
+
 cout << "\n\n\t\tCHECK-IN SERVICES";
 cout << "\n\t\t-----------------------------------------------------";
-cout << "\n\t\t4.  Check In";
-cout << "\n\t\t5.  Check Out";
+cout << "\n\t\t6.  Check In";
+cout << "\n\t\t7.  Check Out";
 
 cout << "\n\n\t\tSEARCH SERVICES";
 cout << "\n\t\t-----------------------------------------------------";
-cout << "\n\t\t6.  Search Room Number";
-cout << "\n\t\t7.  Search Room Type";
-cout << "\n\t\t8.  Search Available Room";
-cout << "\n\t\t9.  Search Room Price";
-cout << "\n\t\t10. Search Booking ID";
+cout << "\n\t\t8.  Search Room Number";
+cout << "\n\t\t9.  Search Room Type";
+cout << "\n\t\t10.  Search Available Room";
+cout << "\n\t\t11.  Search Room Price";
+cout << "\n\t\t12. Search Booking ID";
 
 cout << "\n\n\t\tPROFILE MANAGEMENT";
 cout << "\n\t\t-----------------------------------------------------";
-cout << "\n\t\t11. Logout";
-cout << "\n\t\t12. View Profile";
-cout << "\n\t\t13. Update Profile";
-cout << "\n\t\t14. Delete Account";
-cout << "\n\t\t\t\t15. Display Reservation Linked List";
+cout << "\n\t\t13. Logout";
+cout << "\n\t\t14. View Profile";
+cout << "\n\t\t15. Update Profile";
+cout << "\n\t\t16. Delete Account";
+cout << "\n\t\t17. Display Reservation Linked List";
 
 cout << "\n\n\t\t=====================================================";
 cout << "\n\t\tEnter Choice : ";
@@ -1290,51 +1344,59 @@ if(cin.fail())
             case 3:
                 viewReservation();
                 break;
-
-            case 4:
+                
+			case 4:
+			    makePayment();
+			    break;
+			
+			case 5:
+			    viewPaymentHistory();
+			    break;
+			    
+            case 6:
                 checkIn();
                 break;
 
-            case 5:
+            case 7:
                 checkOut();
                 break;
 
-            case 6:
+            case 8:
                 jumpSearchRoom();
                 break;
 
-           case 7:
+           case 9:
                 jumpSearchRoomType();
                 break;
 
-          case 8:
+          case 10:
                jumpSearchAvailableRoom();
                break;
 
-         case 9:
+         case 11:
                interpolationSearchPrice();
                break;
 
-         case 10:
+         case 12:
                searchBookingID();
                break;
 
-        case 11:
+        case 13:
                break;
 
-        case 12:
+        case 14:
             viewProfile();
             break;
 
-        case 13:
+        case 15:
             updateProfile();
             break;
 
-        case 14:
+        case 16:
             deleteAccount();
             break;
 
-        case 15:
+        case 17:
             displayReservationList();
             break;
 
@@ -1917,6 +1979,109 @@ void revenueStatistic()
     system("pause");
 }
 
+
+
+
+void viewPaymentHistory()
+{
+    system("cls");
+
+    ifstream file("payment.txt");
+
+    string paymentID;
+    string bookingID;
+    string amount;
+    string method;
+
+    cout << "\n\n\t\t\t\t===== PAYMENT HISTORY =====";
+
+    while(getline(file, paymentID, '|'))
+    {
+        getline(file, bookingID, '|');
+        getline(file, amount, '|');
+        getline(file, method);
+
+        cout << "\n\n\t\t\t\tPayment ID : "
+             << paymentID;
+
+        cout << "\n\t\t\t\tBooking ID : "
+             << bookingID;
+
+        cout << "\n\t\t\t\tAmount : RM"
+             << amount;
+
+        cout << "\n\t\t\t\tMethod : "
+             << method;
+
+        cout << "\n\t\t\t\t------------------------";
+    }
+
+    file.close();
+
+    system("pause");
+}
+
+
+void searchPaymentRecord()
+{
+    system("cls");
+
+    string id;
+
+    cout << "\n\n\t\t\t\t===== SEARCH PAYMENT =====";
+
+    cout << "\n\n\t\t\t\tEnter Payment ID : ";
+    cin >> id;
+
+    ifstream file("payment.txt");
+
+    string paymentID;
+    string bookingID;
+    string amount;
+    string method;
+
+    bool found = false;
+
+    while(getline(file, paymentID, '|'))
+    {
+        getline(file, bookingID, '|');
+        getline(file, amount, '|');
+        getline(file, method);
+
+        if(paymentID == id)
+        {
+            found = true;
+
+            cout << "\n\n\t\t\t\tPayment Found!";
+
+            cout << "\n\t\t\t\tPayment ID : "
+                 << paymentID;
+
+            cout << "\n\t\t\t\tBooking ID : "
+                 << bookingID;
+
+            cout << "\n\t\t\t\tAmount : RM"
+                 << amount;
+
+            cout << "\n\t\t\t\tMethod : "
+                 << method;
+
+            break;
+        }
+    }
+
+    file.close();
+
+    if(!found)
+    {
+        cout << "\n\n\t\t\t\tPayment Not Found!";
+    }
+
+    system("pause");
+}
+
+
+
 //LOUIS
 
 
@@ -1960,6 +2125,9 @@ cout << "\n\t\t [15] Update Room";
 cout << "\n\t\t [16] Delete Room";
 cout << "\n\t\t [17] Search Room";
 cout << "\n\t\t [18] Sort Room Records";
+cout << "\n\t\t [19] View Payment History";
+cout << "\n\t\t [20] Search Payment";
+
 
 cout << "\n\n\t\t=====================================================";
 cout << "\n\t\t Enter Choice : ";
@@ -2045,7 +2213,15 @@ cout << "\n\t\t Enter Choice : ";
 			case 18:
 			    sortRoomRecords();
 			    break;
-			    
+			
+			case 19:
+			    viewPaymentHistory();
+			    break;
+			
+			case 20:
+			    searchPaymentRecord();
+			    break;
+			
             default:
                 cout << "\nInvalid Choice!";
                 system("pause");
@@ -2055,8 +2231,6 @@ cout << "\n\t\t Enter Choice : ";
 }
 
 //LOUIS 
-
-
 
 //ZIYI
 int main()
