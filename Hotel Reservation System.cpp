@@ -9,6 +9,7 @@
 #include <algorithm>
 using namespace std;
 
+void searchCustomer();
 void jumpSearchRoom();
 void interpolationSearchPrice();
 void searchBookingID();
@@ -102,7 +103,7 @@ public:
 
     ~Customer()
     {
-        cout << "Customer object destroyed\n";
+        // Destructor removed
     }
 
     void update(string newName);
@@ -233,9 +234,22 @@ void showCustomerContact(Customer c)
 
 void viewAllReservations()
 {
+    system("cls");
+
     ifstream file("reservation.txt");
 
-    string bookingID, customerID, roomNumber, days, totalPrice;
+    string bookingID;
+    string customerID;
+    string roomNumber;
+    string days;
+    string totalPrice;
+
+    bool found = false;
+    int no = 1;
+
+    cout << "\n\n\t\t\t\t========================================";
+    cout << "\n\t\t\t\t        ALL RESERVATIONS";
+    cout << "\n\t\t\t\t========================================";
 
     while(getline(file, bookingID, '|'))
     {
@@ -244,12 +258,31 @@ void viewAllReservations()
         getline(file, days, '|');
         getline(file, totalPrice);
 
-        cout << "\nBooking ID : " << bookingID;
-        cout << "\nCustomer ID : " << customerID;
-        cout << "\nRoom Number : " << roomNumber;
-        cout << "\nDays : " << days;
-        cout << "\nTotal Price : RM" << totalPrice;
-        cout << "\n----------------------";
+        found = true;
+
+        cout << "\n\n\t\t\t\tReservation #" << no++;
+
+        cout << "\n\t\t\t\tBooking ID   : "
+             << bookingID;
+
+        cout << "\n\t\t\t\tCustomer ID  : "
+             << customerID;
+
+        cout << "\n\t\t\t\tRoom Number  : "
+             << roomNumber;
+
+        cout << "\n\t\t\t\tDays Stayed  : "
+             << days;
+
+        cout << "\n\t\t\t\tTotal Price  : RM"
+             << totalPrice;
+
+        cout << "\n\t\t\t\t----------------------------------------";
+    }
+
+    if(!found)
+    {
+        cout << "\n\n\t\t\t\tNo Reservation Found!";
     }
 
     file.close();
@@ -522,6 +555,15 @@ struct Payment
     double amount;
     string method;
 };
+
+struct CustomerRecord
+{
+    string customerID;
+    string name;
+    string phone;
+    string password;
+};
+
 // ADD ROOM
 void addRoomRecord()
 {
@@ -802,50 +844,52 @@ bool customerExists(string id)
 
 void registerUser()
 {
-	
-	system("cls");
-	
-    Customer *c = new Customer();
+    system("cls");
+
+    Customer c;
 
     cout << "\n\n\t\t\t\t===== CUSTOMER REGISTRATION =====\n";
 
     cout << "\n\n\t\t\t\tEnter Customer ID: ";
-    cin >> c->customerID;
+    cin >> c.customerID;
 
-    if (customerExists(c->customerID))
+    if(customerExists(c.customerID))
     {
         cout << "\n\n\t\t\t\tCustomer ID already exists!\n";
-
-        delete c;
-
         system("pause");
         return;
     }
-     cin.ignore();
+
+    cin.ignore();
 
     cout << "\n\n\t\t\t\tEnter Name: ";
-    getline(cin, c->name);
+    getline(cin, c.name);
 
     cout << "\n\n\t\t\t\tEnter Phone Number: ";
-    getline(cin, c->phone);
+    getline(cin, c.phone);
 
     cout << "\n\n\t\t\t\tEnter Password: ";
-    getline(cin, c->password);
+    getline(cin, c.password);
 
     ofstream file("customer.txt", ios::app);
 
-    file << c->customerID << "|"
-         << c->name << "|"
-         << c->phone << "|"
-         << c->password << endl;
+    if(!file)
+    {
+        cout << "\n\n\t\t\t\tError Opening customer.txt";
+        system("pause");
+        return;
+    }
+
+    file << c.customerID << "|"
+         << c.name << "|"
+         << c.phone << "|"
+         << c.password << endl;
 
     file.close();
 
     cout << "\n\n\t\t\t\tRegistration Successful!\n";
 
-    delete c;
-    
-      system("pause");
+    system("pause");
 }
 
 bool loginUser()
@@ -1486,6 +1530,8 @@ if(cin.fail())
 
 //LOUIS
 
+
+
 void jumpSearchRoom()
 {
     system("cls");
@@ -1663,19 +1709,116 @@ void searchBookingID()
             break;
         }
     }
+    file.close();
+
+if(!found)
+{
+    cout << "\n\n\t\t\t\tBooking ID Not Found!";
+}
+
+system("pause");
+}
+
+
+void searchCustomer()
+{
+    system("cls");
+
+    CustomerRecord customer[100];
+    int count = 0;
+
+    ifstream file("customer.txt");
+
+    while(getline(file, customer[count].customerID, '|'))
+    {
+        getline(file, customer[count].name, '|');
+        getline(file, customer[count].phone, '|');
+        getline(file, customer[count].password);
+        count++;
+    }
 
     file.close();
 
-    if(!found)
+    // Bubble Sort Customer ID
+    for(int i = 0; i < count - 1; i++)
     {
-        cout << "\n\n\t\t\t\tBooking ID Not Found!";
-        cout << "\n\t\t\t\tPlease check the Booking ID and try again.";
-        cout << "\n\t\t\t\tExample: B001, B002, B003";
+        for(int j = 0; j < count - i - 1; j++)
+        {
+            if(customer[j].customerID > customer[j + 1].customerID)
+            {
+                CustomerRecord temp = customer[j];
+                customer[j] = customer[j + 1];
+                customer[j + 1] = temp;
+            }
+        }
     }
 
-    cout << "\n\n\t\t\t\t";
+    string key;
+
+    cout << "\n\n\t\t\t\t===================================";
+    cout << "\n\t\t\t\t      JUMP SEARCH CUSTOMER";
+    cout << "\n\t\t\t\t===================================";
+
+    cout << "\n\n\t\t\t\tEnter Customer ID : ";
+    cin >> key;
+
+    int n = count;
+    int step = sqrt(n);
+    int prev = 0;
+
+    while(customer[min(step, n) - 1].customerID < key)
+    {
+        prev = step;
+        step += sqrt(n);
+
+        if(prev >= n)
+        {
+            cout << "\n\n\t\t\t\tCustomer Not Found!";
+            system("pause");
+            return;
+        }
+    }
+
+    while(customer[prev].customerID < key)
+    {
+        prev++;
+
+        if(prev == min(step, n))
+        {
+            cout << "\n\n\t\t\t\tCustomer Not Found!";
+            system("pause");
+            return;
+        }
+    }
+
+    if(customer[prev].customerID == key)
+    {
+        cout << "\n\n\t\t\t\t===================================";
+        cout << "\n\t\t\t\t      CUSTOMER FOUND";
+        cout << "\n\t\t\t\t===================================";
+
+        cout << "\n\n\t\t\t\tCustomer ID : "
+             << customer[prev].customerID;
+
+        cout << "\n\t\t\t\tName        : "
+             << customer[prev].name;
+
+        cout << "\n\t\t\t\tPhone       : "
+             << customer[prev].phone;
+
+        cout << "\n\t\t\t\tPassword    : "
+             << customer[prev].password;
+
+        cout << "\n\n\t\t\t\t===================================";
+    }
+    else
+    {
+        cout << "\n\n\t\t\t\tCustomer Not Found!";
+    }
+
     system("pause");
 }
+
 
 //LOUIS
 
@@ -2201,6 +2344,7 @@ cout << "\n\t\t [17] Search Room";
 cout << "\n\t\t [18] Sort Room Records";
 cout << "\n\t\t [19] View Payment History";
 cout << "\n\t\t [20] Search Payment";
+cout << "\n\t\t [21] Search Customer";
 
 
 cout << "\n\n\t\t=====================================================";
@@ -2295,12 +2439,21 @@ cout << "\n\t\t Enter Choice : ";
 			case 20:
 			    searchPaymentRecord();
 			    break;
-			
-            default:
+			    
+			case 21:
+                searchCustomer();
+                break;
+
+			    
                 cout << "\nInvalid Choice!";
                 system("pause");
+                
+                default:
+            cout << "\n\n\t\t\t\tInvalid Choice!";
+            system("pause");
+        
         }
-
+        
     } while(choice != 12);
 }
 
